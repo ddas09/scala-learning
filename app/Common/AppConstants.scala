@@ -5,6 +5,8 @@ object AppConstants {
 
   val MIN_EMPLOYEE_AGE = 21
 
+  val DIRECTOR_QUALIFICATION_AGE = 40
+
   val BOARD_OF_DIRECTORS = "BOD"
 
   val ENGINEERING_DEPARTMENT  = "ENG"

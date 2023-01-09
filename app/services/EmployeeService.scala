@@ -56,6 +56,11 @@ class EmployeeService @Inject() {
     }
   }
 
+  def totalEmployeeAge(): Int = {
+    boardOfDirectors.totalEmployeeAge() + serviceDepartment.totalEmployeeAge() 
+    + operationsDepartment.totalEmployeeAge() + engineeringDepartment.totalEmployeeAge()
+  }
+
   def averageEmployeeAge(department: String): Int = {
     department match {
       case AppConstants.BOARD_OF_DIRECTORS => boardOfDirectors.averageEmployeeAge()
@@ -65,11 +70,6 @@ class EmployeeService @Inject() {
     }
   }
   
-  def totalEmployeeAge(): Int = {
-    boardOfDirectors.totalEmployeeAge() + serviceDepartment.totalEmployeeAge() 
-    + operationsDepartment.totalEmployeeAge() + engineeringDepartment.totalEmployeeAge()
-  }
-
   def averageEmployeeAge(): Int = {
     val totalEmployeeCount: Int = boardOfDirectors.getTotalEmployee() + serviceDepartment.getTotalEmployee()
                                 + operationsDepartment.getTotalEmployee() + engineeringDepartment.getTotalEmployee()    
@@ -84,6 +84,18 @@ class EmployeeService @Inject() {
       case AppConstants.OPERATIONS_DEPARTMENT => operationsDepartment.availableVacancy()
       case AppConstants.ENGINEERING_DEPARTMENT => engineeringDepartment.availableVacancy()
     }
+  }
+
+  def recommendedDirectors(): List[Employee] = {
+    val recommendedEngineers = engineeringDepartment.employees
+      .filter(employee => employee.age > AppConstants.DIRECTOR_QUALIFICATION_AGE)
+
+    val recommendedOperationTeamMembers = operationsDepartment.employees
+      .filter(employee => employee.age > AppConstants.DIRECTOR_QUALIFICATION_AGE)
+
+    val recommendedDirectors = recommendedEngineers ++ recommendedOperationTeamMembers
+
+    recommendedDirectors.toList
   }
 }
 

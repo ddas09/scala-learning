@@ -52,22 +52,47 @@ class EmployeeController @Inject()(val employeeService: EmployeeService, val con
   )
   serviceTeam.foreach(member => employeeService.addEmployee(member, AppConstants.SERVICE_DEPARTMENT))
 
-  def index() = Action { implicit request: Request[AnyContent] =>
-    Ok("")
-  }
-
   def getEledestEmployee(department: String) = Action { implicit request: Request[AnyContent] =>
     val eldestEmployee = employeeService.getEldestEmployee(department)
-    Ok(eldestEmployee.toString())
+    Ok(s"Eldest employee of $department is ${eldestEmployee.toString()}")
   }
 
   def getYoungestEmployee(department: String) = Action { implicit request: Request[AnyContent] =>
     val youngestEmployee = employeeService.getYoungestEmployee(department)
-    Ok(youngestEmployee.toString())
+    Ok(s"Youngest employee of $department is ${youngestEmployee.toString()}")
   }
 
-  def getTotalAge(department: String) = Action { implicit request: Request[AnyContent] =>
-    val totalAge = employeeService.totalEmployeeAge(department)
-    Ok(s"Total age is: $totalAge")
+  def getTotalEmployeeAge(department: Option[String]) = Action { implicit request: Request[AnyContent] =>
+    if (department.isEmpty) {
+      val totalAge = employeeService.totalEmployeeAge()
+      Ok(s"Total age of ITT is: $totalAge")
+    } else {
+      val totalAge = employeeService.totalEmployeeAge(department.get)
+      Ok(s"Total age of ${department.get} department is: $totalAge")
+    }
+  }
+
+  def getAverageEmployeeAge(department: Option[String]) = Action { implicit request: Request[AnyContent] =>
+    if (department.isEmpty) {
+      val totalAge = employeeService.averageEmployeeAge()
+      Ok(s"Average age of ITT is: $totalAge")
+    } else {
+      val totalAge = employeeService.averageEmployeeAge(department.get)
+      Ok(s"Average age of ${department.get} department is: $totalAge")
+    }
+  }
+
+  def getAvailableVacancy(department: String) = Action { implicit request: Request[AnyContent] =>
+    val availableVacancy = employeeService.availableVacancy(department)
+    Ok(s"Available vacancy of $department is ${availableVacancy.toString()}")
+  }
+
+  def getRecommendedDirectors = Action { implicit request: Request[AnyContent] => 
+    val recommendedDirectors = employeeService.recommendedDirectors()
+    if (recommendedDirectors.isEmpty) {
+      Ok("No eligible candidates")
+    } else {
+      Ok(recommendedDirectors.toString())
+    }
   }
 }
