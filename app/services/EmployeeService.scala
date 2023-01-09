@@ -11,49 +11,39 @@ class EmployeeService @Inject() {
   private val operationsDepartment = new OperationsDepartment
   private val engineeringDepartment = new EngineeringDepartment
 
-  def addEmployee(employee: Employee, department: String): Boolean = {
-    department match {
-      case AppConstants.BOARD_OF_DIRECTORS => boardOfDirectors.addEmployee(employee)
-      case AppConstants.SERVICE_DEPARTMENT => serviceDepartment.addEmployee(employee)
-      case AppConstants.OPERATIONS_DEPARTMENT => operationsDepartment.addEmployee(employee)
-      case AppConstants.ENGINEERING_DEPARTMENT => engineeringDepartment.addEmployee(employee)
+  private def getDepartmentByName(departmentName: String): Option[Department] = {
+    departmentName match {
+      case AppConstants.BOARD_OF_DIRECTORS => Some(boardOfDirectors)
+      case AppConstants.SERVICE_DEPARTMENT => Some(serviceDepartment)
+      case AppConstants.OPERATIONS_DEPARTMENT => Some(operationsDepartment)
+      case AppConstants.ENGINEERING_DEPARTMENT => Some(engineeringDepartment)
+      case _ => None
     }
   }
 
-  def removeEmployee(employee: Employee, department: String): Boolean = {
-    department match {
-      case AppConstants.BOARD_OF_DIRECTORS => boardOfDirectors.removeEmployee(employee)
-      case AppConstants.SERVICE_DEPARTMENT => serviceDepartment.removeEmployee(employee)
-      case AppConstants.OPERATIONS_DEPARTMENT => operationsDepartment.removeEmployee(employee)
-      case AppConstants.ENGINEERING_DEPARTMENT => engineeringDepartment.removeEmployee(employee)
-    }
+  def addEmployee(employee: Employee, departmentName: String): Boolean = {
+    val department = this.getDepartmentByName(departmentName)
+    if (department.isEmpty) false else department.get.addEmployee(employee)
   }
 
-  def getEldestEmployee(department: String): Employee = {
-    department match {
-      case AppConstants.BOARD_OF_DIRECTORS => boardOfDirectors.getEldestEmployee()
-      case AppConstants.SERVICE_DEPARTMENT => serviceDepartment.getEldestEmployee()
-      case AppConstants.OPERATIONS_DEPARTMENT => operationsDepartment.getEldestEmployee()
-      case AppConstants.ENGINEERING_DEPARTMENT => engineeringDepartment.getEldestEmployee()
-    }
+  def removeEmployee(employee: Employee, departmentName: String): Boolean = {
+    val department = this.getDepartmentByName(departmentName)
+    if (department.isEmpty) false else department.get.removeEmployee(employee)
   }
 
-  def getYoungestEmployee(department: String): Employee = {
-    department match {
-      case AppConstants.BOARD_OF_DIRECTORS => boardOfDirectors.getYoungestEmployee()
-      case AppConstants.SERVICE_DEPARTMENT => serviceDepartment.getYoungestEmployee()
-      case AppConstants.OPERATIONS_DEPARTMENT => operationsDepartment.getYoungestEmployee()
-      case AppConstants.ENGINEERING_DEPARTMENT => engineeringDepartment.getYoungestEmployee()
-    }
+  def getEldestEmployee(departmentName: String): Option[Employee] = {
+    val department = this.getDepartmentByName(departmentName)
+    if (department.isEmpty) None else Some(department.get.getEldestEmployee())
   }
 
-  def totalEmployeeAge(department: String): Int = {
-    department match {
-      case AppConstants.BOARD_OF_DIRECTORS => boardOfDirectors.totalEmployeeAge()
-      case AppConstants.SERVICE_DEPARTMENT => serviceDepartment.totalEmployeeAge()
-      case AppConstants.OPERATIONS_DEPARTMENT => operationsDepartment.totalEmployeeAge()
-      case AppConstants.ENGINEERING_DEPARTMENT => engineeringDepartment.totalEmployeeAge()
-    }
+  def getYoungestEmployee(departmentName: String): Option[Employee] = {
+    val department = this.getDepartmentByName(departmentName)
+    if (department.isEmpty) None else Some(department.get.getYoungestEmployee())
+  }
+
+  def totalEmployeeAge(departmentName: String): Option[Int] = {
+    val department = this.getDepartmentByName(departmentName)
+    if (department.isEmpty) None else Some(department.get.totalEmployeeAge())
   }
 
   def totalEmployeeAge(): Int = {
@@ -61,13 +51,9 @@ class EmployeeService @Inject() {
     + operationsDepartment.totalEmployeeAge() + engineeringDepartment.totalEmployeeAge()
   }
 
-  def averageEmployeeAge(department: String): Int = {
-    department match {
-      case AppConstants.BOARD_OF_DIRECTORS => boardOfDirectors.averageEmployeeAge()
-      case AppConstants.SERVICE_DEPARTMENT => serviceDepartment.averageEmployeeAge()
-      case AppConstants.OPERATIONS_DEPARTMENT => operationsDepartment.averageEmployeeAge()
-      case AppConstants.ENGINEERING_DEPARTMENT => engineeringDepartment.averageEmployeeAge()
-    }
+  def averageEmployeeAge(departmentName: String): Option[Int] = {
+    val department = this.getDepartmentByName(departmentName)
+    if (department.isEmpty) None else Some(department.get.averageEmployeeAge())
   }
   
   def averageEmployeeAge(): Int = {
@@ -77,13 +63,9 @@ class EmployeeService @Inject() {
     this.totalEmployeeAge() / totalEmployeeCount
   }
 
-  def availableVacancy(department: String): Int = {
-    department match {
-      case AppConstants.BOARD_OF_DIRECTORS => boardOfDirectors.availableVacancy()
-      case AppConstants.SERVICE_DEPARTMENT => serviceDepartment.availableVacancy()
-      case AppConstants.OPERATIONS_DEPARTMENT => operationsDepartment.availableVacancy()
-      case AppConstants.ENGINEERING_DEPARTMENT => engineeringDepartment.availableVacancy()
-    }
+  def availableVacancy(departmentName: String): Option[Int] = {
+    val department = this.getDepartmentByName(departmentName)
+    if (department.isEmpty) None else Some(department.get.availableVacancy())
   }
 
   def recommendedDirectors(): List[Employee] = {

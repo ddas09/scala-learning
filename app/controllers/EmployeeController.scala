@@ -54,12 +54,20 @@ class EmployeeController @Inject()(val employeeService: EmployeeService, val con
 
   def getEledestEmployee(department: String) = Action { implicit request: Request[AnyContent] =>
     val eldestEmployee = employeeService.getEldestEmployee(department)
-    Ok(s"Eldest employee of $department is ${eldestEmployee.toString()}")
+
+    if (eldestEmployee.isDefined)
+      Ok(s"Eldest employee of $department is ${eldestEmployee.get.toString()}")
+    else
+      Ok(s"Invalid department name: $department")
   }
 
   def getYoungestEmployee(department: String) = Action { implicit request: Request[AnyContent] =>
     val youngestEmployee = employeeService.getYoungestEmployee(department)
-    Ok(s"Youngest employee of $department is ${youngestEmployee.toString()}")
+
+    if (youngestEmployee.isDefined)
+      Ok(s"Youngest employee of $department is ${youngestEmployee.get.toString()}")
+    else 
+      Ok(s"Invalid department name: $department")
   }
 
   def getTotalEmployeeAge(department: Option[String]) = Action { implicit request: Request[AnyContent] =>
@@ -68,31 +76,43 @@ class EmployeeController @Inject()(val employeeService: EmployeeService, val con
       Ok(s"Total age of ITT is: $totalAge")
     } else {
       val totalAge = employeeService.totalEmployeeAge(department.get)
-      Ok(s"Total age of ${department.get} department is: $totalAge")
+
+      if (totalAge.isDefined)
+        Ok(s"Total age of ${department.get} department is: ${totalAge.get}")
+      else
+        Ok(s"Invalid department name: ${department.get}")
     }
   }
 
   def getAverageEmployeeAge(department: Option[String]) = Action { implicit request: Request[AnyContent] =>
     if (department.isEmpty) {
-      val totalAge = employeeService.averageEmployeeAge()
-      Ok(s"Average age of ITT is: $totalAge")
+      val averageAge = employeeService.averageEmployeeAge()
+      Ok(s"Average age of ITT is: $averageAge")
     } else {
-      val totalAge = employeeService.averageEmployeeAge(department.get)
-      Ok(s"Average age of ${department.get} department is: $totalAge")
+      val averageAge = employeeService.averageEmployeeAge(department.get)
+
+      if (averageAge.isDefined)
+        Ok(s"Average age of ${department.get} department is: ${averageAge.get}")
+      else
+        Ok(s"Invalid department name: ${department.get}")
     }
   }
 
   def getAvailableVacancy(department: String) = Action { implicit request: Request[AnyContent] =>
     val availableVacancy = employeeService.availableVacancy(department)
-    Ok(s"Available vacancy of $department is ${availableVacancy.toString()}")
+
+    if (availableVacancy.isDefined)
+      Ok(s"Available vacancy of $department is ${availableVacancy.get.toString()}")
+    else
+      Ok(s"Invalid department name: $department")
   }
 
   def getRecommendedDirectors = Action { implicit request: Request[AnyContent] => 
     val recommendedDirectors = employeeService.recommendedDirectors()
-    if (recommendedDirectors.isEmpty) {
+    
+    if (recommendedDirectors.isEmpty) 
       Ok("No eligible candidates")
-    } else {
+    else 
       Ok(recommendedDirectors.toString())
-    }
   }
 }
